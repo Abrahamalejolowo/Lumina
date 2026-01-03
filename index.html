@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina | Your Premium Blue Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary-blue: #003366; /* Deep Navy */
+            --water-blue: #0077b6;   /* Ocean Blue */
+            --aqua: #90e0ef;         /* Clear Water */
+            --mist: #f0f9ff;         /* Light Water tint */
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+        }
+
+        .bg-primary-blue { background-color: var(--primary-blue); }
+        .text-primary-blue { color: var(--primary-blue); }
+        .bg-water-blue { background-color: var(--water-blue); }
+        .text-water-blue { color: var(--water-blue); }
+        .hover-water:hover { background-color: #005f8d; }
+
+        .search-focus:focus-within {
+            box-shadow: 0 0 0 4px rgba(0, 119, 182, 0.15);
+            border-color: var(--water-blue);
+        }
+
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 51, 102, 0.08);
+        }
+
+        .category-item:hover {
+            background-color: var(--mist);
+            color: var(--water-blue);
+        }
+
+        /* Wave Decoration */
+        .wave-bg {
+            background: linear-gradient(180deg, var(--primary-blue) 0%, var(--water-blue) 100%);
+        }
+
+        .spinner {
+            border: 3px solid var(--mist);
+            border-top: 3px solid var(--water-blue);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Top Bar -->
+    <div class="bg-primary-blue text-white hidden md:block">
+        <div class="max-w-7xl mx-auto px-4 h-9 flex justify-between items-center text-[11px] font-semibold uppercase tracking-wider">
+            <div class="flex gap-4">
+                <a href="#" class="flex items-center gap-2 hover:text-aqua transition-colors">
+                    <i class="fas fa-ship"></i> Free Shipping on Water Orders
+                </a>
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-aqua">Store Locator</a>
+                <a href="#" class="hover:text-aqua">Track Order</a>
+                <a href="#" class="hover:text-aqua">Sell on Lumina</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="sticky top-0 bg-white/95 backdrop-blur-md z-50 border-b border-blue-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center gap-6">
+            <!-- Logo -->
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="renderHome()">
+                    <div class="w-10 h-10 bg-water-blue rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
+                        <i class="fas fa-droplet text-white"></i>
+                    </div>
+                    <span class="font-extrabold text-2xl text-primary-blue tracking-tighter">LUMINA</span>
+                </div>
+                <div class="flex md:hidden gap-5 text-xl text-primary-blue">
+                    <i class="fas fa-search" onclick="document.getElementById('search-input').focus()"></i>
+                    <i class="fas fa-shopping-cart" onclick="toggleCart()"></i>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="flex-1 w-full">
+                <form onsubmit="handleSearch(event)" class="relative flex items-center search-focus border-2 border-slate-100 bg-slate-50 rounded-xl overflow-hidden transition-all">
+                    <span class="pl-4 text-slate-400"><i class="fas fa-search"></i></span>
+                    <input 
+                        type="text" 
+                        id="search-input"
+                        placeholder="Search for clothes, shoes, bags and more..." 
+                        class="w-full px-4 py-3 text-sm bg-transparent focus:outline-none"
+                    >
+                    <button type="submit" class="bg-water-blue text-white px-8 py-3 font-bold text-sm hover-water transition-all">
+                        FIND
+                    </button>
+                </form>
+            </div>
+
+            <!-- Actions -->
+            <div class="hidden md:flex items-center gap-8 font-bold text-sm text-primary-blue">
+                <div class="flex items-center gap-2 cursor-pointer hover:text-water-blue transition-colors">
+                    <i class="far fa-user-circle text-2xl"></i>
+                    <span>Login</span>
+                </div>
+                <div onclick="toggleCart()" class="flex items-center gap-2 cursor-pointer bg-mist px-4 py-2 rounded-full text-water-blue relative hover:bg-blue-100 transition-all">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Cart</span>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-primary-blue text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white scale-0 transition-transform">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Body Content -->
+    <div class="flex-1">
+        <main class="max-w-7xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+            
+            <!-- Sidebar Navigation -->
+            <aside class="hidden lg:block w-64 flex-shrink-0">
+                <div class="bg-white rounded-2xl shadow-sm border border-blue-50 overflow-hidden sticky top-28">
+                    <div class="p-4 bg-mist font-bold text-xs uppercase text-water-blue tracking-widest">Departments</div>
+                    <div class="flex flex-col text-sm py-2">
+                        <button onclick="fetchByCategory('all')" class="category-item flex items-center gap-3 p-4 transition-all">
+                            <i class="fas fa-border-all w-5"></i> All Collections
+                        </button>
+                        <button onclick="fetchByCategory('men\'s clothing')" class="category-item flex items-center gap-3 p-4 transition-all">
+                            <i class="fas fa-tshirt w-5"></i> Men's Apparel
+                        </button>
+                        <button onclick="fetchByCategory('women\'s clothing')" class="category-item flex items-center gap-3 p-4 transition-all">
+                            <i class="fas fa-person-dress w-5"></i> Women's Apparel
+                        </button>
+                        <button onclick="fetchByCategory('jewelery')" class="category-item flex items-center gap-3 p-4 transition-all">
+                            <i class="fas fa-ring w-5"></i> Accessories & Bags
+                        </button>
+                        <button onclick="fetchByCategory('electronics')" class="category-item flex items-center gap-3 p-4 transition-all">
+                            <i class="fas fa-laptop w-5"></i> Gadgets
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Product Display Area -->
+            <div class="flex-1">
+                <!-- Water Theme Banner -->
+                <div class="wave-bg rounded-3xl overflow-hidden h-48 md:h-72 mb-10 relative shadow-2xl shadow-blue-100">
+                    <div class="absolute inset-0 opacity-30 mix-blend-overlay">
+                        <img src="https://images.unsplash.com/photo-1519067736912-42ee045f7403?w=1200&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute inset-0 flex flex-col justify-center px-12 text-white">
+                        <span class="bg-aqua/20 backdrop-blur-md text-aqua text-[10px] font-bold px-3 py-1 rounded-full w-fit mb-4">NEW WATER SEASON</span>
+                        <h2 class="text-3xl md:text-5xl font-black mb-2 tracking-tighter">Oceanic Fashion</h2>
+                        <p class="text-sm md:text-lg opacity-80 max-w-md">Refresh your wardrobe with our latest aquatic-inspired collections.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 id="category-title" class="text-2xl font-extrabold text-primary-blue">Top Picks</h2>
+                        <div class="h-1 w-12 bg-water-blue mt-1 rounded-full"></div>
+                    </div>
+                    <div class="text-sm font-bold text-water-blue flex items-center gap-2 cursor-pointer group">
+                        View All <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Loading -->
+                <div id="loading-state" class="flex flex-col items-center py-24 bg-white rounded-3xl border border-blue-50 shadow-sm">
+                    <div class="spinner mb-4"></div>
+                    <p class="text-slate-400 text-sm font-medium">Diving for deals...</p>
+                </div>
+
+                <!-- Grid -->
+                <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 opacity-0 transition-opacity">
+                    <!-- Products -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-primary-blue text-white pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <!-- Branding -->
+                <div>
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 bg-water-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-droplet text-white text-sm"></i>
+                        </div>
+                        <span class="font-bold text-xl tracking-tighter">LUMINA</span>
+                    </div>
+                    <p class="text-blue-200 text-sm leading-relaxed mb-6">
+                        Nigeria's premier destination for blue-themed fashion and quality essentials. Experience the wave of modern shopping.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-water-blue transition-colors"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-water-blue transition-colors"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-water-blue transition-colors"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-bold mb-6 text-aqua uppercase text-xs tracking-widest">Shopping</h4>
+                    <ul class="space-y-4 text-sm text-blue-100">
+                        <li><a href="#" class="hover:text-white transition-colors">Men's Apparel</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Women's Apparel</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Bags & Shoes</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Accessories</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-bold mb-6 text-aqua uppercase text-xs tracking-widest">Support</h4>
+                    <ul class="space-y-4 text-sm text-blue-100">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Safety Tips</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Return Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-bold mb-6 text-aqua uppercase text-xs tracking-widest">Stay Updated</h4>
+                    <p class="text-sm text-blue-100 mb-4">Get the latest waves in your inbox.</p>
+                    <form class="flex gap-2">
+                        <input type="email" placeholder="Email Address" class="bg-white/10 border-none rounded-lg px-4 py-2 text-sm w-full focus:ring-1 focus:ring-aqua outline-none">
+                        <button class="bg-water-blue text-white px-4 py-2 rounded-lg font-bold text-sm">JOIN</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-white/10 text-center text-blue-300 text-xs">
+                &copy; 2024 Lumina Marketplace. All rights reserved. Built for the modern shopper.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Drawer -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-500 flex flex-col">
+        <div class="p-6 border-b flex justify-between items-center bg-mist">
+            <h2 class="font-bold text-primary-blue flex items-center gap-2">
+                <i class="fas fa-shopping-cart text-water-blue"></i> Your Bag
+            </h2>
+            <button onclick="toggleCart()" class="text-slate-400 hover:text-primary-blue"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
+        <div id="cart-footer" class="p-6 border-t bg-mist hidden">
+            <div class="flex justify-between font-extrabold text-xl mb-6 text-primary-blue">
+                <span>Subtotal</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button class="w-full bg-water-blue text-white py-4 rounded-2xl shadow-lg shadow-blue-100 font-bold hover-water transition-all uppercase tracking-widest text-sm">
+                Confirm Order
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://fakestoreapi.com/products";
+        let products = [];
+        let filteredProducts = [];
+        let cart = [];
+
+        async function init() {
+            await fetchProducts();
+        }
+
+        async function fetchProducts() {
+            setLoading(true);
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                products = data;
+                filteredProducts = data;
+                renderProducts(products);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('product-grid').innerHTML = `<p class="col-span-full text-center py-20">Unable to load products.</p>`;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function renderProducts(list) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            
+            list.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "product-card bg-white rounded-2xl p-4 border border-blue-50 flex flex-col h-full group";
+                card.innerHTML = `
+                    <div class="relative aspect-square mb-4 flex items-center justify-center p-4 bg-white rounded-xl overflow-hidden">
+                        <img src="${p.image}" class="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute bottom-2 left-2 flex gap-1">
+                            <span class="bg-water-blue text-white text-[8px] px-2 py-0.5 rounded-full font-bold">SALE</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">${p.category}</p>
+                        <h3 class="text-sm text-primary-blue font-bold mb-2 line-clamp-2 h-10 leading-snug">${p.title}</h3>
+                        <div class="flex items-center gap-1 text-[10px] text-yellow-400 mb-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span class="text-slate-300 font-semibold ml-1">4.5</span>
+                        </div>
+                        <div class="mt-auto flex items-center justify-between">
+                            <div>
+                                <p class="font-extrabold text-lg text-primary-blue">$${p.price.toFixed(2)}</p>
+                                <p class="text-[10px] text-slate-400 line-through">$${(p.price * 1.3).toFixed(2)}</p>
+                            </div>
+                            <button onclick="addToCart(${p.id})" class="bg-mist text-water-blue w-10 h-10 rounded-xl hover:bg-water-blue hover:text-white transition-all flex items-center justify-center shadow-sm">
+                                <i class="fas fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            grid.classList.add('opacity-100');
+        }
+
+        function handleSearch(e) {
+            e.preventDefault();
+            const query = document.getElementById('search-input').value.toLowerCase();
+            document.getElementById('category-title').innerText = query ? `Results for "${query}"` : "Top Picks";
+            filteredProducts = products.filter(p => p.title.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+            renderProducts(filteredProducts);
+        }
+
+        function fetchByCategory(cat) {
+            document.getElementById('category-title').innerText = cat === 'all' ? 'Top Picks' : cat;
+            filteredProducts = cat === 'all' ? products : products.filter(p => p.category === cat);
+            renderProducts(filteredProducts);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            cart.push(p);
+            updateCartUI();
+            const count = document.getElementById('cart-count');
+            count.innerText = cart.length;
+            count.classList.remove('scale-0');
+            count.classList.add('scale-100');
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const footer = document.getElementById('cart-footer');
+            
+            container.innerHTML = cart.length ? '' : '<div class="text-center py-20 text-slate-300 italic"><p>Bag is empty</p></div>';
+            let total = 0;
+            
+            cart.forEach((item, idx) => {
+                total += item.price;
+                container.innerHTML += `
+                    <div class="flex gap-4 items-center bg-mist p-3 rounded-2xl border border-blue-50">
+                        <img src="${item.image}" class="w-14 h-14 object-contain bg-white p-2 rounded-xl">
+                        <div class="flex-1">
+                            <h4 class="text-[11px] font-bold text-primary-blue line-clamp-1">${item.title}</h4>
+                            <p class="text-xs font-extrabold text-water-blue">$${item.price}</p>
+                        </div>
+                        <button onclick="removeFromCart(${idx})" class="text-slate-300 hover:text-red-400 transition-colors"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `;
+            });
+
+            totalEl.innerText = `$${total.toFixed(2)}`;
+            footer.style.display = cart.length ? 'block' : 'none';
+        }
+
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
+            updateCartUI();
+            const count = document.getElementById('cart-count');
+            count.innerText = cart.length;
+            if (cart.length === 0) count.classList.add('scale-0');
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
+        }
+
+        function renderHome() {
+            document.getElementById('search-input').value = '';
+            fetchByCategory('all');
+        }
+
+        function setLoading(val) {
+            document.getElementById('loading-state').style.display = val ? 'flex' : 'none';
+            document.getElementById('product-grid').style.opacity = val ? '0' : '1';
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
